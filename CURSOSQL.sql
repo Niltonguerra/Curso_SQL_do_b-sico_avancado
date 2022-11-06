@@ -1,7 +1,44 @@
 
+
+
+
+/*Esse curso foi baseado no curso de SQL- SERVER da BÓSON TREINAMENTOS:
+
+segue o link do curso completamente gratuito:
+	https://www.youtube.com/watch?v=1YQIRdWkMvs&list=PLucm8g_ezqNqI5cW3alteV5olcMCcHYRK&index=1
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 --Caso queira ver algum assunto em específico use o comando: 'ctrl'+'F' para pesquisar pelo arquivo.
 
 --Não delecione os comentários caso queira textar o código por partes, pois isso irá gerar erro!
+
+
+
+
+
+	-- para criar uma variável é preciso apenas colocar o '@' na frente, como mostrado abaixo
+
+	create rule rl_preco as @valor > 0.00
+	 -- essa regra chamada 'rl_preco' impede que a variável @valor seja menor de 0, ou seja, negativo
+	 
+	 -- as regras devem estar no inicio de arquivos de consulta!!!
+
+
+
 
 
 
@@ -120,10 +157,11 @@ ALTER TABLE tbl_Livro
 
 
 	create table clientes(
-	ID_Clientes varchar(10),
+	ID_Clientes int identity,
 	Nome VARCHAR(50),
 	sobrenome VARCHAR(60)
 	)
+
 
 	ALTER TABLE Clientes
 		ALTER COLUMN ID_Clientes SMALLINT not null --altera o tipo da tabela
@@ -196,7 +234,7 @@ GO													-- O comando 'go' faz com que o script já escrito execute
 
 
 
-TRUNCATE TABLE tbl_livro							-- Exclua todos os registros contidos na tabela tbl_livro
+TRUNCATE TABLE tbl_livro							-- Excluir todos os registros contidos na tabela tbl_livro
 GO
 
 
@@ -358,7 +396,7 @@ SELECT * FROM livroAutor
 SELECT COUNT(*) AS quantidade_de_linha FROM tbl_autores		--Conte todas as linhas da tabela autores
 SELECT MAX(Preco_livro) AS MAIOR_VALOR FROM tbl_livro		--Qual é o maior valor da coluna Preco_livro na tabela tbl_livro
 SELECT MIN(Preco_livro) AS MENOR_VALOR FROM tbl_livro		--Qual é o menor valor da coluna Preco_livro na tabela tbl_livro
-SELECT AVG(Preco_livro) AS MÉDIA_ARITMÉTICA FROM tbl_livro		--Qual é a média aritmética da coluna Preco_livro na tabela tbl_livro
+SELECT AVG(Preco_livro) AS MÉDIA_ARITMÉTICA FROM tbl_livro	--Qual é a média aritmética da coluna Preco_livro na tabela tbl_livro
 SELECT SUM(Preco_livro) AS SOMA_TOTAL FROM tbl_livro		--Qual é a soma de todos os valores da coluna Preco_livro na tabela tbl_livro
 
 
@@ -368,7 +406,8 @@ SELECT SUM(Preco_livro) AS SOMA_TOTAL FROM tbl_livro		--Qual é a soma de todos o
 
 
 SELECT * FROM tbl_livro WHERE Data_Pub BETWEEN '20040517' AND '20100217'
-								--selecione todos os valores da tabela tbl_livros onde Data_Pub está entre os valores (nesse caso datas): 20040517 e 20100217
+								--selecione todos os valores da tabela tbl_livros onde Data_Pub está entre os valores 
+								--(nesse caso datas): 20040517 e 20100217
 
 
 
@@ -388,17 +427,20 @@ SELECT * FROM tbl_livro WHERE Data_Pub BETWEEN '20040517' AND '20100217'
 --INNER JOIN
 
 SELECT * FROM tbl_livro INNER JOIN tbl_autores ON tbl_livro.ID_AUTOR = tbl_autores.ID_Autor
---traga todos os valores das tabelas tbl_livro e tbl_Autores onde o campo ID_autor da tabela tbl_autor for igual e não nulo ao campo ID_autores da tabela tbl_livros
+--traga todos os valores das tabelas tbl_livro e tbl_Autores onde o campo ID_autor da tabela 
+--tbl_autor for igual e não nulo ao campo ID_autores da tabela tbl_livros
 
 
 SELECT tbl_livro.Nome_Livro, tbl_livro.ISBN, tbl_autores.Nome_Autor FROM tbl_livro INNER JOIN tbl_autores ON tbl_livro.ID_Autor = tbl_autores.ID_Autor;
---traga apenas os campos campos: tbl_livro.Nome_Livro, tbl_livro.ISBN, tbl_autores.Nome_Autor da tabela da tabela: tbl_livro, onde tbl_livro.ID_Autor = tbl_autores.ID_Autor
+--traga apenas os campos campos: tbl_livro.Nome_Livro, tbl_livro.ISBN, tbl_autores.Nome_Autor da 
+--tabela da tabela: tbl_livro, onde tbl_livro.ID_Autor = tbl_autores.ID_Autor
 
 
 	--usando aliases
 -- eliases nada mais é que voçê dar nome a um nome a tabela para encurtar o tamanho do comando como pode ser vista na linha abaixo.
 
-SELECT L.Nome_Livro AS Livros, E.Nome_editora AS Editoras FROM tbl_livro AS L INNER JOIN tbl_editoras AS E ON L.ID_editora = E.ID_editora WHERE E.Nome_Editora LIKE 'M%';
+SELECT L.Nome_Livro AS Livros, E.Nome_editora AS Editoras FROM tbl_livro AS L INNER JOIN tbl_editoras 
+AS E ON L.ID_editora = E.ID_editora WHERE E.Nome_Editora LIKE 'M%';
 
 --nesse caso chamei a tabela 'tbl_livro' de 'L' 
 --e a tabela 'tbl_editoras' de 'E'
@@ -409,27 +451,460 @@ SELECT L.Nome_Livro AS Livros, E.Nome_editora AS Editoras FROM tbl_livro AS L IN
 
 
 --LEFT JOIN:TRAZ TODOS OS VALORES DA TABELA CITADA PRIMEIRO.
+	ALTER TABLE tbl_livro
+		ALTER COLUMN ID_Autor SMALLINT  null --altera o tipo da tabela
+
+		sp_help tbl_livro
+
+		insert into tbl_livro(Nome_Livro,ISBN,Data_Pub,Preco_livro,ID_Autor,ID_editora) values
+	('eu amo batata frita',123456789,'20090701',68.45,null,3 )
+		insert into tbl_livro(Nome_Livro,ISBN,Data_Pub,Preco_livro,ID_Autor,ID_editora) values
+	('eu amo arroz doce',193456789,'20090703',168.45,null,2 )
+	/*isso que eu fiz de colocar a chave estrangeira como nula está errado, mas é apenas para 
+	exemplificar o left e riht join*/
+
 
 	SELECT * FROM tbl_livro
 	SELECT * FROM tbl_autores LEFT JOIN tbl_livro ON tbl_livro.ID_AUTOR = tbl_autores.ID_Autor
-	-- traga todos as informações da primeira tabela citada e tudo o que tiver da segunda tabela onde tbl_livro.ID_AUTOR = tbl_autores.ID_Autor
+	-- traga todos as informações da primeira tabela citada e tudo o que tiver da segunda tabela onde 
+	--tbl_livro.ID_AUTOR = tbl_autores.ID_Autor
 
 --RIGHT JOIN: TRAZ TODOS OS VALORES DA  SEGUNDA TABELA CITADA. 
 	SELECT * FROM tbl_livro
 	SELECT * FROM tbl_autores
 	SELECT * FROM tbl_autores RIGHT JOIN tbl_livro ON tbl_livro.ID_AUTOR = tbl_autores.ID_Autor
-	-- traga todos as informações da segunda tabela citada e tudo o que tiver da primeira tabela onde tbl_livro.ID_AUTOR = tbl_autores.ID_Autor
+	-- traga todos as informações da segunda tabela citada e tudo o que tiver da primeira tabela onde 
+	--tbl_livro.ID_AUTOR = tbl_autores.ID_Autor
 	
-	SELECT * FROM tbl_autores RIGHT JOIN tbl_livro ON tbl_livro.ID_AUTOR = tbl_autores.ID_Autor WHERE tbl_autores.ID_Autor IS NULL --O 'NULL' TRABALHA COM O 'IS'
+	SELECT * FROM tbl_autores RIGHT JOIN tbl_livro ON tbl_livro.ID_AUTOR = tbl_autores.ID_Autor 
+	WHERE tbl_autores.ID_Autor IS NULL --O 'NULL' TRABALHA COM O 'IS'
 
-	-- traga todos as informações da segunda tabela citada e tudo o que tiver da primeira tabela onde tbl_livro.ID_AUTOR = tbl_autores.ID_Autor E ONDE tbl_autores.ID_Autor IS NULL
+	-- traga todos as informações da segunda tabela citada e tudo o que tiver da primeira tabela 
+	--onde tbl_livro.ID_AUTOR = tbl_autores.ID_Autor E ONDE tbl_autores.ID_Autor IS NULL
 
 
 
 
 --FULL JOIN: TRAZ TODOS OS VALORES DE AMBAS AS TABELAS CITADAS.
 
+	select li.Nome_Livro,li.ID_Autor,au.Nome_Autor from tbl_livro as li full join tbl_autores as au 
+	on li.ID_Autor = au.ID_Autor where li.ID_Autor is null or au.ID_Autor is null
+	 /*traga os registros li.Nome_Livro,li.ID_Autor,au.Nome_Autor das tabelas tbl_autores e tbl_livros 
+	 mesmo que não tenha referencia dos dados em ambas as tabelas e traga apenas os valores que são nulos 
+	 ou na tabela tbl_autores ou tbl_livros*/
+
+
+
+
+
+
+
+
+/* o operador'in' pode substituir o operador 'or',segue exemplo:*/
+
+select  * from tbl_livro where ID_Autor in (1,2)
+/* selecione tudo da tabla tbl_livros onde id_autor é igual a 1 ou 2*/
+
+select  * from tbl_livro where ID_Autor not in (1,2)
+/* selecione tudo da tabla tbl_livros onde id_autor não é igual a 1 ou 2*/
+
+
+
+
+--CAMPO CALCULADO
  
+ create table produtos(
+	 codProduto smallint, 
+	 NomeProduto varchar(20),
+	 Preco money,
+	 Quant smallint, 
+	 total as (Preco * Quant)
+ )
+
+ insert into produtos values
+	 (1,'mouse',15.00,2),
+	 (2,'Teclado ',18.00,1),
+	 (3,'Fones',25.00,1),
+	 (4,'Pendrive',25.00,3),
+	 (5,'Sd card',29.00,2),
+	 (6,'DVD-R',1.30,12);
+
+	 select * from produtos
+
+
+
+
+	 --Criando index
+	 /*o index permite que as aplicações de banco de dados encontrem os dados mais rapidamente, 
+	 sem ter de ler a tabela toda.
+	 
+	 vale salientar que é recomendado criar index em tabelas muito consultadas, em registros mais 
+	 comuns de consulta, uma vez que tabelas indexadas levam mais tempo para serem atualizadas.*/
+
+	 select * from tbl_autores
+		
+	create index indice_nome_livro on tbl_livro(Nome_Livro)
+
+	--CRIAR REGRAS
+
+	/*As regras são configurações que permitem especificar como 
+	determinados parâmetros do banco de dados devem se comportar,por exemplo:
+	limitar faixas de valores em colunas, ou 
+	especificar valores inválidos para registros.
+	*/
+
+
+
+	-- o sp_bindrule vincula uma regra a um registro de uma tabela
+	execute sp_bindrule rl_preco, 'tbl_livro.Preco_livro'
+
+	--a regra que usaremos está localizada no inicio do arquivo
+
+	-- caso tentemos inserir numeros menores que 0, não conseguiremos, pois a regra que criamos nós impere
+	insert into tbl_livro values ('batatinha',123654987,'20221203',-15.20,4,2)
+
+
+	insert into tbl_livro values ('batatinha',123654987,'20221203',15.20,4,2)
+
+
+-- Fazer um backup
+
+backup database db_curso_sql to disk ='C:\SQL\backup.bak';
+
+-- with format;
+--o 'with format' formata o disco que será inserido o backup
+
+--é importante espécificar o tipo do arquivo como bak
+
+
+
+
+
+
+
+
+
+
+
+
+
+--concatenação entre String's e colunas de tabelas
+
+--é possível concaterar Strings usando o operador '+'
+--exemplo: string | coluna +String2 | coluna
+
+select 'Nilton comprou os livros:' + 'de nossa livraria'
+select * from tbl_autores
+select Nome_Autor from tbl_autores
+
+
+
+
+select 'nome do autor: ' + Nome_Autor + ' ' + sobrenome_autor from tbl_autores
+
+select 'eu gosto do livro' + Nome_Livro as 'meu livro' from tbl_livro where ID_Autor like 2
+
+
+
+--collation(colação/agrupamento)
+
+/*
+trata-se da codificação dos caracteres em uma ordem padrão
+
+Muitos sistemas de colação são baseados em ordem numérica ou alfabética, 
+a colação usada pelos bancos de dados é configurada durante a instalação do sistema.
+
+collation-charts.org - site com cartas de agrupamento em vários alfabetos e idiomas
+*/	
+
+
+--traz as opções de colações contidas no sistema
+	select * from fn_helpcollations()
+
+-- O SERVERPROPERTY pode trazer um informação que está sendo usada pelo sistema,
+--nesse caso como especificamos com ' collation' irá retornar qual é a colação usada pelo sistema
+select SERVERPROPERTY('collation')	as colação_usada
+
+
+--verificar o esquema de agrupamento(colação) de um banco de dados
+select DATABASEPROPERTYEX('db_curso_sql','Collation') as colação
+ 
+ --alterar o esquema de agrupamento(colação) de um banco de dados
+ drop table produtos
+
+ alter database db_curso_sql
+	collate Greek_CI_AI
+
+alter database db_curso_sql
+	collate Latin1_General_CI_AS
+
+
+ --alterar o esquema de agrupamento(colação) de um coluna específica
+select * from tbl_livro order by Nome_Livro collate Icelandic_CI_AI
+
+
+
+
+
+
+
+
+
+
+
+
+
+--cláusula With ties
+
+
+
+create table tbl_times(
+Nome_time varchar(20),
+Pontos smallint,
+)
+
+insert into tbl_times values
+('Atlético Goianiense', 3),
+('Atlético Mineiro', 29),
+('Atlético Paranaense', 30),
+('Avaí', 15),
+('Bahia', 40),
+('Botafogo', 7),
+('Chapecoense', 29),
+('Corinthians', 9),
+('Coritiba', 3),
+('Cruzeiro', 2 );
+
+
+  -- A claúsula with ties é usada como o top e é usada para evitar que se perca um valor repetido
+ 
+ --com with ties:
+	select top 3 with TIES Nome_time,Pontos from tbl_times order by Pontos desc
+
+ --sem with ties:
+	select top 3 Nome_time,Pontos from tbl_times order by Pontos desc
+
+
+
+TRUNCATE TABLE tbl_times
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ --VIEWS
+ /*
+ O que é uma exibição(Visão) é uma tabela virtual baseada no conjunto de resultados de uma consulta SQL.
+ 
+ Contém linhas e colunas como declarações JOIN, WHERE e funções como uma tabela normal.
+ 
+ Mostra sempre resultados de dados atualizados, pois o motor do banco recria os dados toda vez que um
+ usuário consulta a visão.
+ */
+
+
+ --criar view:
+ CREATE VIEW vw_LivrosAutores as 
+	select 
+		 tbl_livro.Nome_Livro as Livro,
+		 tbl_autores.Nome_Autor as Autor 
+		 from tbl_livro
+		 inner join tbl_autores on tbl_autores.ID_Autor = tbl_livro.ID_Autor
+
+
+--selecionar view:
+ select * from vw_LivrosAutores where livro like 'S%'
+
+
+
+ --alterar view:
+  alter view vw_LivrosAutores as 
+	 select 
+		 tbl_livro.Nome_Livro as Livro,
+		 tbl_autores.Nome_Autor as Autor,
+		 tbl_livro.Preco_livro as preco_livro
+		 from tbl_livro
+		 inner join tbl_autores on tbl_autores.ID_Autor = tbl_livro.ID_Autor
+
+select * from vw_LivrosAutores
+
+--excluir view
+drop view vw_LivrosAutores
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--Subconsultas e CTE
+
+/*Uma subconsulta(subquery) é uma declaração sql embutida em uma consulta externa.
+A subconsulta fornece uma resposta à consulta externa na forma de um valor escalar, 
+lista de valores, ou conjunto de dados, equivalentes a uma expressão, lista ou tabela
+para a consulta externa. 
+
+exemplo simples: select(select 'Fábio') as Subconsulta;
+*/
+
+select * from tbl_autores
+select * from tbl_livro
+select * from tbl_livro as livro full join tbl_autores as autor on autor.ID_Autor = livro.ID_Autor
+
+
+--exemplo de subconsulta
+select Preco_livro from tbl_livro where ID_Autor = (select ID_Autor from tbl_autores where 
+sobrenome_autor = 'Stanek')
+	--selecione o registro Preco_livro da tabela tbl_livro, onde o ID_Autor é igual a seleção do 
+	-- ID_Autor onde o registro sobrenome_autor é igual a Stanek
+
+
+--outro exemplo de subconsulta(embora essa não vá funcionar por não existir as tabelas)
+/*
+
+select resultado.cliente,sum(resultado.total) as Total from 
+(
+select cl.nome_cliente as cliente,pr.produto*
+co.quantidade as total
+from clientes as cl
+inner join compras as co
+on cl.id_cliente = co.id_cliente
+inner join produtos pr
+on co.id_produto = pt.id_produto
+) as resultado
+group by Resultado.cliente 
+orber by total
+
+
+me recuso a escrever em linguagem natural esse código leia-o você mesmo, não é díficil!
+*/
+
+--CTE (Common table Expression)
+
+/* 
+O que é CTE (Common table Expression) ?
+
+variação sentática de uma subconsulta, similar a uma exibição(view).
+pode ser acessada múltiplas vezes dentro da consulta principal, como se fossse uma exibição ou tabela.
+*/
+
+/*
+exemplo de consulta usando CTE:
+
+with consultaCTE (cliente,Total)
+as (select cl.nome_cliente as cliente,
+pr.preco_produto * co.quantidade as total
+from clientes as cl
+inner join compras as co
+on cl.id_cliente = co.id_cliente
+inner join produtos as pr
+on co.id_produto = pr.id_produto 
+)
+
+select cliente,sum(total) as valor total
+from consultaCTE
+group by cliente
+orber by valorTotal
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--variáveis
+  /*
+  as variáveis podem ser declaradas no corpo de um batch ou procedimento.
+  Pode-se atribuir-lhes valores usando-se declarações set ou select. 
+  As variáveis são inicializadas por padrão com null.
+  */
+
+
+  --declara variável
+DECLARE @valor int,  
+		@texto varchar(40),
+		@data_nasc date,
+		@nada money
+
+
+	--atribui valor a variável
+set @valor = 50
+set @texto = 'Nilton'
+set @data_nasc = GETDATE()
+
+--lê a variável
+select  @valor as valor,
+		@texto as nome,
+		@data_nasc as data_de_nascimento, 
+		@nada as salario 
+
+
+
+
+--usando variável com o select
+
+declare @livro varchar(30)
+select @livro = nome_livro from tbl_livro where ID_livros = 101
+select @livro as Nome_do_Livro
+
+-- a variavel pode armazenar apenas uma informação por vez!
+
+declare @preco money,@quantidade int,@nome varchar(30) set @quantidade = 5
+select @preco=Preco_livro,@nome = Nome_Livro from tbl_livro where ID_livros = 101
+select @nome as 'nome do livro', @preco*@quantidade as 'preço total dos livros'
+select @preco as 'preço unitário'
+
+
+
+--Converção de dados 
+
+--Cast
+--um exemplo fala mais que mil palavras, exemplo:
+select 'o preço do livro' + Nome_Livro + ' é de R$' + CAST(Preco_livro as varchar(6)) as Item from tbl_livro
+where ID_autor = 2
+
+
+
+
+
+
+
 
 
 
