@@ -892,12 +892,388 @@ select @preco as 'preço unitário'
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 --Converção de dados 
 
---Cast
+--Cast:
 --um exemplo fala mais que mil palavras, exemplo:
 select 'o preço do livro' + Nome_Livro + ' é de R$' + CAST(Preco_livro as varchar(6)) as Item from tbl_livro
 where ID_autor = 2
+
+--convert:
+-- O operador 'convert' permite trabalhar com mais tipos de converção do que o operador 'cast'
+--exemplo:
+select 'o preço do livro ' + Nome_Livro + ' é de: R$' + CONVERT(varchar(6),Preco_livro) from tbl_livro
+
+
+--edição de data com o convert:
+--antes:
+select 'A data de publicação ' + CONVERT(varchar(18),Data_Pub) from tbl_livro where ID_livros = 102
+--depois:
+select'A data de publicação ' + CONVERT(varchar(18),Data_Pub,103) from tbl_livro where ID_livros = 102
+
+
+
+
+/* segue o link que contém informações do que pode ou não ser convertido e os estilos de edição de dado:
+http://msdn.microsoft.com/pt-br/library/ms187928.aspx
+*/
+
+
+
+-- if e else no sql server
+--exemplo:
+	declare @numero int,
+	@texto varchar (10)
+
+	set @numero = 20
+	set @texto = 'Nilton'
+
+if @numero = 20
+	select 'número correto!'
+
+	if @texto = 'Nilton'
+		begin --começa o código
+			set @numero = 30
+			select @numero
+	end;  --finaliza o código
+else 
+	begin 
+		set @numero = 40
+		select 'Número incorreto'
+end;
+
+
+
+
+
+
+
+--outro exemplo:
+
+ DECLARE @NOMELIVRO VARCHAR (50),
+           @VALOR REAL,
+           @STATUS VARCHAR (6)
+
+  SELECT @NOMELIVRO = NOME_LIVRO, @VALOR = (TBL_LIVRO.PRECO_LIVRO) FROM tbl_livro WHERE  ID_AUTOR = 4
+
+  IF @VALOR >= 60.00
+
+  BEGIN 
+
+      SELECT @STATUS = ' CARO '
+  END;
+
+  ELSE 
+
+ BEGIN 
+
+      SELECT @STATUS = 'BARATO'
+	 END;
+
+	  SELECT 'O PREÇO DO LIVRO ' + @NOMELIVRO  +char(13)+char(10)+ ' É ' + @STATUS + CAST(@VALOR AS VARCHAR ) AS VALOR;
+
+	  -- o código: '+char(13)+char(10)+' quebra a linha de uma string em sql
+
+
+
+
+--while no sql server
+
+
+
+
+
+--exemplo(imprimir os numeros de 0 à 10):
+declare @valor int
+set @valor =  0
+while @valor<= 10
+	begin
+		print'Número:'+cast(@valor as varchar(2))
+		set @valor = @valor+1
+	end;
+
+
+--exemplo(imprimir livro e preço dos livros de IDs de 100 a 105):
+declare @valor int
+set @valor =  100
+while @valor<= 105
+	begin
+		select ID_livros as ID,Nome_Livro as livro,Preco_livro as preço 
+		from tbl_livro where ID_livros = @valor
+		set @valor = @valor+1
+	end;
+
+
+
+
+
+
+
+
+
+
+
+
+-- Stored Proceures 
+
+/*o que é:
+	são lotes(batches) de declarações SQL que podem ser executadas como um subrotina.
+	Permitem centralizar a lógica de acesso aos dados em um único local, facilitando 
+	a manutenção e otimização de códigos.
+	Também é possível ajustar permissões de acesso aos usuários, definindo quem pode 
+	ou não executálas.
+*/
+
+--exemplo1:
+
+--criando o procedimento(procedure)
+CREATE PROCEDURE teste 
+as 
+select 'Bóson Treinamentos' as Nome
+
+--executando a procedure
+exec teste
+
+
+
+--exemplo2:
+create procedure p_LivroValor
+as
+select Nome_Livro,Preco_livro from tbl_livro
+
+
+exec p_LivroValor
+
+--traz informações da procedure
+exec sp_helptext p_Livrovalor
+
+
+--criar um procedure criptografado
+create procedure p_LivroISBN
+with encryption
+as
+select Nome_Livro,ISBN from tbl_livro
+
+--não se pode ver a procedure com o sp_helptext, pois foi colocado o comando 'with encryption'.
+
+exec sp_helptext p_LivroISBN
+
+/*alterar um procedure,basicamente você vai re-escrever todo o código da procedure, entretanto isso permite
+que você possa manter as permições já dadas a procedure*/
+
+alter procedure teste(@parl as int)
+as
+select @parl as 'valor da variavel'
+
+exec teste 22
+
+
+
+
+
+
+
+
+
+alter procedure p_LivroValor(@ID smallint)
+as
+select Nome_Livro as Livro, Preco_Livro as Preço from tbl_livro where ID_livros = @ID
+
+exec p_LivroValor 104
+
+
+
+--o comando 'ctrl'+'K'+'C'  comenta um bloco de código
+--o comando 'ctrl'+'K'+'U' descomenta um bloco de código
+
+
+
+alter procedure teste(@par1 as int,@par2 as varchar(20))
+as
+
+select @par1 as 'valor da variavel 1'
+select @par2 as 'valor da variavel 2'
+
+--por posição:
+exec teste 2, 'laranja'
+
+
+--por chamada:
+exec teste @par2 = 'laranja', @par1 = 2 
+
+
+
+
+
+
+
+alter procedure p_LivroValor(@ID smallint,@Preco money)
+as
+select Nome_Livro as Livro, Preco_Livro as Preço from tbl_livro 
+where ID_livros > @ID and Preco_livro > @Preco
+
+exec p_LivroValor 103,60
+
+
+
+
+
+alter procedure p_LivroValor(@ID smallint,@Quantidade smallint)
+as
+select Nome_Livro as Livro, Preco_Livro*@Quantidade as Preço from tbl_livro 
+where ID_livros = @ID 
+
+
+exec p_LivroValor 100,3
+
+--inserção de valores com procedures
+
+create procedure p_insere_editora(@nome varchar(50))
+as
+insert into tbl_editoras(Nome_editora) values(@nome)
+
+exec p_insere_editora 'livrosfantasticos'
+
+
+select * from tbl_editoras
+
+
+
+--criação de procedures com valores padrão (ou pré estabelecidos, se preferir) 
+create procedure p_teste_valor_padrão(@param1 int, @param2 varchar(20)='Valor Padrão!')
+as
+select 'valor do parâmetro 1:' + Cast(@param1 as varchar)
+select 'valor do parãmetro 2:'+@param2
+
+exec p_teste_valor_padrão 3
+
+exec p_teste_valor_padrão 3,'arroz doce'
+
+
+--parâmetro de saída no procedure
+
+--criação
+alter procedure teste(@parl as int output)
+as
+select @parl*2
+return  
+	--return termina a procedure incondicionalmente, é usado para retornar status de sucesso ou falha
+
+
+--execução
+declare @valor as int = 15
+exec teste @valor output
+print @valor
+
+
+
+--criação:
+alter procedure p_LivroValor(@Quantidade smallint, @ID smallint,@cod smallint = -10)
+as
+set nocount on --impede que conte as linhas
+if @ID >=100
+	begin
+		select Nome_Livro as livros, Preco_livro*@Quantidade as preço from tbl_livro
+		where ID_livros = @ID
+		return 1 
+	end
+else
+	return @cod
+
+
+--execução:
+declare @codigo int
+exec @codigo = p_LivroValor @ID = 102, @Quantidade = 5
+print @codigo
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
