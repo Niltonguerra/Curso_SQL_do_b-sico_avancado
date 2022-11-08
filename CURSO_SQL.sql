@@ -37,6 +37,7 @@ segue o link do curso completamente gratuito:
 	 
 	 -- as regras devem estar no inicio de arquivos de consulta!!!
 
+	 create rule nota_aluno as @valor >= 0.00 and @valor <=10.00
 
 
 
@@ -118,6 +119,17 @@ USE db_curso_sql
 	)
 	
 	sp_help tbl_autores  --Mostra informações da tabela
+
+
+
+	CREATE TABLE Customer
+	(SID integer CHECK (SID > 0),  --o check faz a com que o registro aceite valores apenas maiores que um determinado valor, nesse caso, '0'
+	Last_Name varchar (30),
+	First_Name varchar (30));
+
+
+
+
 
 
 
@@ -567,6 +579,23 @@ select  * from tbl_livro where ID_Autor not in (1,2)
 	insert into tbl_livro values ('batatinha',123654987,'20221203',15.20,4,2)
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 -- Fazer um backup
 
 backup database db_curso_sql to disk ='C:\SQL\backup.bak';
@@ -575,6 +604,17 @@ backup database db_curso_sql to disk ='C:\SQL\backup.bak';
 --o 'with format' formata o disco que será inserido o backup
 
 --é importante espécificar o tipo do arquivo como bak
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -603,6 +643,28 @@ select Nome_Autor from tbl_autores
 select 'nome do autor: ' + Nome_Autor + ' ' + sobrenome_autor from tbl_autores
 
 select 'eu gosto do livro' + Nome_Livro as 'meu livro' from tbl_livro where ID_Autor like 2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -940,6 +1002,28 @@ http://msdn.microsoft.com/pt-br/library/ms187928.aspx
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 -- if e else no sql server
 --exemplo:
 	declare @numero int,
@@ -1044,6 +1128,19 @@ while @valor<= 105
 	ou não executálas.
 */
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 --exemplo1:
 
 --criando o procedimento(procedure)
@@ -1064,6 +1161,20 @@ select Nome_Livro,Preco_livro from tbl_livro
 
 exec p_LivroValor
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 --traz informações da procedure
 exec sp_helptext p_Livrovalor
 
@@ -1077,6 +1188,20 @@ select Nome_Livro,ISBN from tbl_livro
 --não se pode ver a procedure com o sp_helptext, pois foi colocado o comando 'with encryption'.
 
 exec sp_helptext p_LivroISBN
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*alterar um procedure,basicamente você vai re-escrever todo o código da procedure, entretanto isso permite
 que você possa manter as permições já dadas a procedure*/
@@ -1105,6 +1230,13 @@ exec p_LivroValor 104
 
 --o comando 'ctrl'+'K'+'C'  comenta um bloco de código
 --o comando 'ctrl'+'K'+'U' descomenta um bloco de código
+
+
+
+
+
+
+
 
 
 
@@ -1146,8 +1278,19 @@ where ID_livros = @ID
 
 exec p_LivroValor 100,3
 
---inserção de valores com procedures
 
+
+
+
+
+
+
+
+
+
+
+
+--inserção de valores com procedures
 create procedure p_insere_editora(@nome varchar(50))
 as
 insert into tbl_editoras(Nome_editora) values(@nome)
@@ -1156,6 +1299,17 @@ exec p_insere_editora 'livrosfantasticos'
 
 
 select * from tbl_editoras
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1170,8 +1324,19 @@ exec p_teste_valor_padrão 3
 exec p_teste_valor_padrão 3,'arroz doce'
 
 
---parâmetro de saída no procedure
 
+
+
+
+
+
+
+
+
+
+
+
+--parâmetro de saída no procedure
 --criação
 alter procedure teste(@parl as int output)
 as
@@ -1184,6 +1349,16 @@ return
 declare @valor as int = 15
 exec teste @valor output
 print @valor
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1225,6 +1400,393 @@ print @codigo
 
 
 
+--                                    Funções
+
+--Funções escalares 
+	/*
+	o que fazem?
+	Retornam um único valor específico
+	*/ 
+
+	--preparação
+	create table tbl_alunos(
+	id_aluno smallint identity not null,
+	nota1 smallint not null,
+	nota2 smallint not null,
+	nota3 smallint not null,
+	nota4 smallint not null,
+	nome_aluno varchar(30) not null
+	constraint pk_id_aluno primary key (id_aluno)
+	)
+
+	execute sp_bindrule nota_aluno, 'tbl_alunos.nota1'
+	execute sp_bindrule nota_aluno, 'tbl_alunos.nota2'
+	execute sp_bindrule nota_aluno, 'tbl_alunos.nota3'
+	execute sp_bindrule nota_aluno, 'tbl_alunos.nota4'
+
+
+
+
+
+
+	insert into tbl_alunos(nota1,nota2,nota3,nota4,nome_aluno) values
+	(10,4,3,7,'Maria Roaquina'),
+	(9,7,2,7,'pedro Roaquina'),
+	(1,10,1,7,'paulo Roaquina'),
+	(7,1,3,3,'silvio Roaquina'),
+	(5,2,3,7,'ana Roaquina'),
+	(3,3,3,8,'paula Roaquina'),
+	(8,4,3,9,'marcela Roaquina'),
+	(2,5,3,6,'marcelo Roaquina'),
+	(8,6,3,10,'andré Roaquina'),
+	(4,7,3,8,'maicon Roaquina');
+
+
+	--criação
+	create function nota_media(@nome varchar(30))
+	returns real
+	as
+		begin
+		declare @media real 
+		select @media=(nota1+nota2+nota3+nota4*2)/5.00 from tbl_alunos where nome_aluno = @nome
+		return @media
+		end
+
+		select dbo.nota_media('maicon Roaquina') as media_do_aluno
+
+
+
+
+
+
+		--função com valores de tabela  embutida(inline)
+		/*
+		o que faz? 
+		São similares a uma exibição, porém permitem 
+		 utilizar parâmetros. retornam um conjunto completo de dados
+		*/
+
+
+
+--criação
+		create function retorna_itens (@valor real)  --ele retorna todos as tabelas do select, ou seja, 
+		returns table								 --as tabelas: l.Nome_Livro,a.Nome_Autor,e.ID_Editora
+		as
+		return(
+			select l.Nome_Livro,a.Nome_Autor,e.ID_Editora 
+			from tbl_livro as l
+			inner join tbl_autores as a
+			on l.ID_Autor = a.ID_Autor
+			inner join tbl_editoras as e
+			on l.ID_editora like e.ID_Editora
+			where l.Preco_livro>@valor)
+
+
+--execução:
+
+--não especificando campos:
+select * from retorna_itens(60)
+
+-- especificando campos:
+select Nome_Livro,Nome_Autor from retorna_itens(60)
+
+
+
+
+
+--Funções com valor de tabela com várias intruções
+
+/*
+O que faz?
+
+combina a habilidade da função escalar de conter códigos complexos com a habilidade da função com
+valor de tabela de retornar um resultset.
+O valor de função cria uma variável do tipo table e a popula a partir do código. Essa tabela é então 
+passada de volta à função, de modo que possa ser usada em declarações select.
+*/
+
+--segue exemplo:
+
+
+--você define quais são as tabelas que a função irá trazer
+
+
+--criação:
+
+create function multi_tabela ()
+	returns @valores table
+		(Nome_livro varchar(50),
+		Data_Pub datetime,                    
+		Nome_Editora varchar(50),
+		Preco_Livro money)
+	AS
+	begin
+	insert @valores (Nome_livro,Data_Pub,Nome_Editora,Preco_livro)
+		select l.Nome_Livro,l.Data_Pub,e.Nome_Editora,l.Preco_livro
+		from tbl_livro as l
+		inner join tbl_editoras as e 
+		on l.ID_editora like e.ID_Editora
+		return
+	end
+	
+
+
+--execução
+
+select * from multi_tabela()
+
+--criou uma nova tabela temporaria que contém os campos setados, nesse caso os campos:      (Nome_livro varchar(50),
+																							--Data_Pub datetime,                    
+																							--Nome_Editora varchar(50),
+																							--Preco_Livro money)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                         --Triggers
+
+/*
+O que é?
+
+
+Um Trigger(Gatilho) é um tipo especial de Stored Procedure qe é executada automaticamente quando
+um usuário realiza uma operação de modificação de dados em uma tabela especificada.
+
+As operações que podem disparar um trigger são:
+-INSERT
+-UPDATE
+-DELETE
+
+
+
+Triggers DML:
+
+
+Os triggers não são executados diretamente disparam apenas em resposta a enentos como insert, 
+update ou delete em uma tabela.
+
+**No SQL Server, os triggers disparam uma vez para cada operação de modificação -e não uma vez por linha 
+afetada (no Oracle há as duas opções).**
+
+
+
+Modo de disparo de um trigger:
+
+Um trigger no SQL Server pode ser disparado de dois modos diferentes:
+
+after - O código presente no trigger e executado após todas as ações terem sido completadas na tabela 
+especificada
+
+instead of- O código presente no trigger é executado no lugar da operação que causou seu disparo.
+
+A imagem img_trigger1.png compara os dois tipos de triggers (ela está na mesma pasta que essa consulta)
+
+
+
+Fluxo de transações:
+
+Para desenvolver Triggers, é necessário conhecimento do fluxo geral da transação, para evitar conflitos 
+entre os triggers e contraints.
+
+As transações se movem através de verificações e códigos na ordem mostrada abaixo:
+
+1.Verificação de IDentity Insert
+2.Restrição (Constraint)  de Nulos(NULL)
+3.Checagem de tipos de dados
+4.Execução de trigger INSTEAD OF(a execução do DML pára aqui; esse trigger não é recursivo)
+5.Restrição de Chave Primária
+6.Restrição de "Check"
+7.Restrição de chave Estrangeira
+8.Execução do DML e atualização do log de tramsações
+9.Execução do trigger after 
+10.Commit da Transação (Confirmação)
+
+*/
+
+
+
+
+
+
+
+
+/*
+sintaxe do trigger:
+
+Create Trigger nome_trigger
+on tabela | view
+[with encryption]
+	after|instead of
+		[insert,update,delete]
+as
+código do trigger
+*/
+
+
+
+								--trigger after
+
+--criação:
+
+create trigger teste_trigger_after 
+on tbl_editoras
+after insert
+as
+print 'Olá mundo!';
+
+
+--teste do trigger:
+insert into tbl_editoras values ('editoras23')
+
+select * from tbl_editoras
+
+
+
+--criação:
+create trigger trigger_after 
+on tbl_editoras
+after insert
+as
+insert into tbl_autores values(25,'José','da Silva');
+insert into tbl_livro values('livro1','123456000','20001010',77,25,2);
+
+
+
+--teste:
+insert into tbl_editoras values ('editoras24')
+
+
+select* from tbl_autores
+select* from tbl_livro
+select* from tbl_editoras
+
+
+
+
+
+
+
+							--trigger instead of
+
+--criação:
+create trigger teste_trigger_insteadof
+on tbl_autores
+instead of insert
+as
+print'Olá de novo! não inseri o 
+registro desta vez!'
+
+--quando coloca na linha de baixo automaricamente quebra a linha.
+
+
+--teste
+insert into tbl_autores values(26,'joão','moura')
+
+select * from tbl_autores
+
+
+--exclui trigger
+
+drop trigger teste_trigger_after 
+
+
+
+
+
+
+
+
+
+
+
+
+
+--Habilitar e dasabilitar triggers
+
+--alterar triggers
+
+/*
+
+sintaxe:
+
+alter table nome_tabela
+enable | Disable trigger nome trigger
+
+
+obs: vale salientar que esse comando só desabilita o trigger, mas não o exclui!
+*/
+
+--criação:
+alter table tbl_editoras
+ Disable trigger trigger_after
+
+ 
+--pesquisa de triggers
+
+	--pesquisar as informações sobre um trigger em uma tabela:
+ 
+		 --sintaxe: exec sp_helptrigger @tabname = nome da tabela
+		 exec sp_helptrigger @tabname = tbl_editoras
+
+
+	--pesquisar as informações sobre um trigger no banco de dados todo:
+
+		--traz todos que estão ativados no banco de dados todo
+		use db_curso_sql
+			select * from sys.triggers where is_disabled=0
+
+		--traz todos que estão desativados no banco de dados todo
+		use db_curso_sql
+			select * from sys.triggers where is_disabled=1
+
+
+
+
+--triggers determinando as colunas atualizadas
+	--A função Update() retorna True se uma coluna especfica dor afetada por uma transação DML 
+		/*Podemos criar um gatinho que executa um código caso a colina especificada seja alterada
+		por um comando DML usando essa função*/
+
+
+		--criação de tabela
+	create trigger trigger_after_autores 
+	on tbl_autores
+	after insert,update
+	as
+	if update(nome_autor)
+		begin
+		print'O nome do autor foi alterado'
+		end
+	else
+		begin
+			print'nome não foi modificado'
+		end
+		--teste
+		update tbl_autores set nome_autor = 'joão' where id_autor = 10
 
 
 
@@ -1261,6 +1823,74 @@ print @codigo
 
 
 
+--alinhamento de triggers DML
+	/*
+	o que é? 
+		Resposta:É quando um trigger ao ser ativado leva ao ativamento de outros triggers.
+	
+	Para isso, a opção de servidor "Permitir que Gatilhos disparem outros gatilhos", em Propriedades do
+	Servidor -> Avançado deve estar configurada como True (é o padrão)
+
+	Para desabilitar/habilitar a opção de aninhamento de triggers, use o comando:
+	
+	exec sp_configure 'Nested Triggers', 0|1;
+	reconfigure;
+
+
+	imagem referencial no arquivo raiz com o nome de: img_trigger2
+	*/
+
+	
+	exec sp_configure 'Nested Triggers', 1; 
+	reconfigure;
+
+
+
+
+
+
+
+	--Triggers Recursivos
+
+	/*
+	Um gatilho recursivo é um tipo especial de trigger after aninhado.
+	O trigger recurivo ocorre quando um trigger executa uma declaração DML que o dispara novamente.
+	Podemos habilitar ou desabilitar os triggers recursivos com o comando alter database:
+
+	alter database nome_banco_dados set recursive_triggers on|off
+	*/
+
+	alter database db_curso_sql set recursive_triggers on
+
+
+	create table tbl_trigger_recursivo(
+	codigo int primary key)
+
+
+	create trigger trigger_rec on tbl_trigger_recursivo
+	after insert
+	as
+	declare @cod int
+	select @cod=max(codigo) from tbl_trigger_recursivo
+	if @cod<10
+		begin
+			insert into tbl_trigger_recursivo select max(codigo)+1 from tbl_trigger_recursivo
+		end
+	else
+		begin
+		print'Trigger REcursivo Finalizado'
+		end
+
+
+		select * from tbl_trigger_recursivo
+
+		insert into tbl_trigger_recursivo values (1);
+
+		select * from tbl_trigger_recursivo
+
+
+
+	
 
 
 
@@ -1273,6 +1903,90 @@ print @codigo
 
 
 
+
+
+
+
+	--renomear tabelas e colunas
+
+	--mostra todas as tabelas no banco de dados selecionado:
+	use db_curso_sql
+	select * from sys.tables;
+
+
+
+	--comando para renomear coluna:
+	--sp_rename 'nometabela.nomeatualcoluna','NovoNomeColuna', 'column';
+
+	sp_rename 'tbl_livro.Nome_livro','Livro', 'column';
+
+	select * from tbl_livro
+
+	sp_rename 'tbl_livro.Livro','Nome_livro', 'column';
+
+	select * from tbl_livro
+
+
+	--comando para renomear tabela:
+	--sp_rename 'nometabelaAntiga','NovoNometabela';
+
+	sp_rename 'tbl_livro','Livros';
+
+	select * from livros
+
+	select * from tbl_livro
+
+	sp_rename 'Livros','tbl_livro';
+
+	select * from livros
+
+	select * from tbl_livro
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	--trabalhando com time
+
+	--sintaxe:nome_coluna time[(frações de segundo)]
+
+
+	create table tbl_visitas(
+	id_visita int primary key identity,
+	nome_visitante varchar(50) not null,
+	cpf varchar(11) not null,
+	cj_visitado smallint not null,
+	data_visita date not null,
+	hora_entr time(0) not null,
+	hora_sai time(0) not null
+	)
+
+	insert into tbl_visitas(nome_visitante,cpf,cj_visitado,data_visita,hora_entr,hora_sai) 
+	values ('nilton_Final_arquivo',45678936985,12,getdate(),'14:05:00','18:15:00')
+
+	select * from tbl_visitas
+
+
+	--calcula a diferença de tempo entre duas datas
+
+	select datediff(minute,hora_entr,hora_sai) as 'permanencia(em minutos)' from tbl_visitas
 
 
 
